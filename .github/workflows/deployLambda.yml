@@ -1,0 +1,43 @@
+# .github/workflows/deploy.yml
+name: Deploy Node.js Lambda
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write # OIDC 必要
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install production dependencies
+        run: npm ci --omit=dev
+
+      - name: Package
+        run: |
+          zip -r function.zip . \
+            -x ".git/*" ".github/*" "*.md" "tests/*" "function.zip"
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::394820920451:role/GithubActionRole
+          aws-region: us-east-1
+
+      - name: Update Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name arn:aws:lambda:us-east-1:394820920451:function:Scheduled-Stock-Notify \
+            --zip-file fileb://function.zip \
+            --publish
+
+      - name: Wait until update finished
+        run: aws lambda wait function-updated --function-name arn:aws:lambda:us-east-1:394820920451:function:Scheduled-Stock-Notify
