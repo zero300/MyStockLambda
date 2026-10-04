@@ -41,3 +41,23 @@ jobs:
 
       - name: Wait until update finished
         run: aws lambda wait function-updated --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }}
+
+      - name: Invoke function
+        run: |
+          RESULT=$(aws lambda invoke \
+            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+            --invocation-type RequestResponse \
+            --cli-binary-format raw-in-base64-out \
+            --payload '{"test": true}' \
+            --log-type Tail \
+            --output json \
+            response.json)
+
+          echo "=== Invoke result ==="
+          echo "$RESULT" | jq '{StatusCode, ExecutedVersion, FunctionError}'
+
+          echo "=== Function logs ==="
+          echo "$RESULT" | jq -r '.LogResult' | base64 -d
+
+          echo "=== Response body ==="
+          cat response.json
