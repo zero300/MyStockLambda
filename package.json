@@ -1,0 +1,20 @@
+{
+  "name": "mystocklambda",
+  "version": "1.0.0",
+  "description": "通過AWS 的 EventBridge 每個禮拜一~五修盤時觸發，呼叫Lambda，讓其抓取台股的資訊，並且實時抓取DynamoDB內，或其他第三方資料庫的資料來判斷要抓取的自選股，\r 寄信通知其盤後資訊。",
+  "homepage": "https://github.com/zero300/MyStockLambda#readme",
+  "bugs": {
+    "url": "https://github.com/zero300/MyStockLambda/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zero300/MyStockLambda.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
