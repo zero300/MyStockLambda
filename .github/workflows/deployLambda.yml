@@ -27,6 +27,12 @@ jobs:
           zip -r function.zip . \
             -x ".git/*" ".github/*" "*.md" "tests/*" "function.zip"
 
+      - name: Debug OIDC sub
+        run: |
+          TOKEN=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r '.value')
+          echo $TOKEN | cut -d. -f2 | base64 -d 2>/dev/null | jq '{sub, aud}'
+
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::394820920451:role/GithubActionRole
